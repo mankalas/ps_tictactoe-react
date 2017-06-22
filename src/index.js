@@ -47,7 +47,7 @@ class Game extends React.Component {
     super();
     this.state = {
       history: [{
-        squares: Array(9).fill(null)
+        squares: Array(9).fill(null),
       }],
       xIsNext: true,
       stepNumber: 0
@@ -89,17 +89,13 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    let desc;
     const moves = history.map((step, move) => {
-      if (move) {
-        desc = 'Move @' + this.position(step.move);
-      } else {
-        desc = 'Game start';
-      }
+      const desc = move ? 'Move @' + this.position(step.move) : 'Game start';
+      const fontWeight = this.state.stepNumber === move ? 'bold' : 'normal'
 
       return (
-        <li key={move}>
-          <a href='#' onClick={() => this.jumpTo(move)}>{desc}</a>
+          <li key={move}>
+          <a href='#' style={{fontWeight: fontWeight}} onClick={() => this.jumpTo(move)}>{desc}</a>
         </li>
         );
     })
