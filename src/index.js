@@ -32,12 +32,16 @@ class Board extends React.Component {
       );
     })
 
-    console.log(rows);
-
     return (
         <div>{rows}</div>
     );
   }
+}
+
+function Toggle(props) {
+  return (
+      <button onClick={props.onClick}>{props.mostRecentFirst ? 'Antichrono.' : 'Chrono.'}</button>
+  );
 }
 
 class Game extends React.Component {
@@ -48,8 +52,11 @@ class Game extends React.Component {
         squares: Array(9).fill(null),
       }],
       xIsNext: true,
-      stepNumber: 0
+      stepNumber: 0,
+      mostRecentFirst: false
     };
+
+    this.changeOrder = this.changeOrder.bind(this);
   }
 
   handleClick(i) {
@@ -69,6 +76,12 @@ class Game extends React.Component {
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
+   }
+
+  changeOrder() {
+    this.setState(prevState => ({
+      mostRecentFirst: !prevState.mostRecentFirst
+    }));
   }
 
   jumpTo(step) {
@@ -88,6 +101,10 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
+      if (this.state.mostRecentFirst) {
+        move = history.length - move - 1;
+        step = history[move];
+      }
       const desc = move ? 'Move @' + this.position(step.move) : 'Game start';
       const fontWeight = this.state.stepNumber === move ? 'bold' : 'normal'
 
@@ -96,7 +113,7 @@ class Game extends React.Component {
           <button style={{fontWeight: fontWeight}} onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
         );
-    })
+    });
 
     let status;
     if (winner) {
@@ -115,6 +132,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <Toggle onClick={this.changeOrder} mostRecentFirst={this.state.mostRecentFirst}/>
           <ol>{moves}</ol>
         </div>
       </div>
@@ -139,8 +157,8 @@ function calculateWinner(squares) {
       return squares[a];
     }
   }
-       return null;
-      }
+  return null;
+}
 
 // ========================================
 
